@@ -107,15 +107,9 @@ tol = 1e-6;
 eta = 0.001;
 lambda = 0.01;
 max_iter = 20000;
-best_rate = 0;
 
 
-correct_rate = [];
-scores = [];
-
-
-
-T = 100;
+T = 1000;
 train_score = zeros(2, T);
 test_score = zeros(2, T);
 A = X(:,idx1);
@@ -151,9 +145,12 @@ for i = 1:T
     %perform TGD
     final_train = sgca_tgd(Xtrain, Strain,S0train,ainit_train,dir,k1,eta,lambda,tol,max_iter);
     a1_final = final_train;
+    beta = a1_final;
     
-    [P,~,~] = svd(Sigma0hat * a1_final, 'econ');
-    X_new = X * (eye(p) - P*P');
+    %[P,~,~] = svd(Sigma0hat^(1/2) * a1_final, 'econ');
+    Z = X * a1_final;
+    P = Z / (Z' * Z)^0.5;
+    X_new = X * (eye(p) - beta * beta' * X' * X/(beta'*X'*X*beta));
     A = X_new(:,idx1);
     B = X_new(:,idx2);
     C = X_new(:,idx3);
@@ -232,7 +229,7 @@ end
 
 
 train_p = sum(train_score(2, :) > mean(train_score(1,: )))/T;
-test_p = sum(test_score(2, :) > mean(train_score(1,: )))/T;
+test_p = sum(test_score(2, :) > mean(test_score(1,: )))/T;
 % pvalue = [train_p, test_p]
 % save('rank2 pvalue','pvalue')
 

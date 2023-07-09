@@ -107,15 +107,9 @@ tol = 1e-6;
 eta = 0.001;
 lambda = 0.01;
 max_iter = 20000;
-best_rate = 0;
 
 
-correct_rate = [];
-scores = [];
-
-
-
-T = 10;
+T = 100;
 train_score = zeros(2, T);
 test_score = zeros(2, T);
 A = X(:,idx1);
@@ -152,7 +146,9 @@ for i = 1:T
     final_train = sgca_tgd(Xtrain, Strain,S0train,ainit_train,dir,k1,eta,lambda,tol,max_iter);
     a1_final = final_train;
     
-    [P,~,~] = svd(Sigma0hat * a1_final, 'econ');
+    %[P,~,~] = svd(Sigma0hat^(1/2) * a1_final, 'econ');
+    Z = 
+    P = 
     X_new = X * (eye(p) - P*P');
     A = X_new(:,idx1);
     B = X_new(:,idx2);
@@ -192,7 +188,7 @@ for i = 1:T
     A_perm = A(randperm(n),:);
     B_perm = B(randperm(n),:);
     C_perm = C(randperm(n),:);
-    X_new = cat(2, A_perm, B_perm, C_perm);
+    X_new = cat(2, A, B_perm, C_perm);
 
 
     Xtrain_new = X_new(~idx,:);
